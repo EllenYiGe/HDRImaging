@@ -1,10 +1,297 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>My Project</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HDR Imaging Project</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.4;
+            background-color: #f8f9fa;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: white;
+            padding: 0.8rem;
+            text-align: center;
+        }
+
+        .section-title {
+            color: #007bff;
+            margin-top: 1.5rem;
+            margin-bottom: 0.8rem;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .card img {
+            height: 150px;
+            object-fit: cover;
+        }
+
+        img {
+            max-width: 50%;
+            height: auto;
+        }
+
+        .toc {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #e9ecef;
+            border-radius: 5px;
+        }
+
+        .toc a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Welcome to My Project</h1>
-    <p>This is a GitHub Pages site for my project.</p>
+    <header class="header">
+        <h1 style="font-size: 18px;">High Dynamic Range Imaging Pipeline</h1>
+        <p style="font-size: 14px;">By Yi Ge (Ellen)</p>
+    </header>
+
+    <main class="container mt-3">
+        <nav class="toc">
+            <h3>Contents</h3>
+            <ul>
+                <li><a href="#summary">Summary</a></li>
+                <li><a href="#methodology">Methodology</a></li>
+                <li><a href="#experiments">Experiments</a></li>
+                <li><a href="#results">Results & Discussion</a></li>
+                <li><a href="#references">References</a></li>
+            </ul>
+        </nav>
+
+        <section id="summary">
+            <h2 class="section-title">Summary</h2>
+            <p>
+                The project presents a robust High Dynamic Range (HDR) image processing pipeline that integrates image
+                merging, white balance correction, and tone mapping to produce high-quality HDR images. Through
+                extensive experimentation, the pipeline has been shown to effectively handle the complexities of HDR
+                imaging, ensuring accurate color representation and preserving detail across a wide range of luminance
+                levels. The proposed methodology also leverages linearization techniques for fine image stack for
+                accurate radiometric calibration, and employs multiple white balance algorithms for consistent color
+                representation, and utilizes the various tone mapping operators to adapt HDR images for standard display
+                devices. The results demonstrate the pipeline’s capability to produce visually appealing and accurate
+                HDR images, making it suitable for various applications in photography and imaging. Future work may
+                explore the integration of advanced machine learning techniques to further enhance the performance and
+                adaptability of the HDR processing pipeline.
+            </p>
+            <div style="text-align: center;"><img src="asset/demo.gif" alt="HDR Demo" class="img-fluid rounded mt-2"
+                    style="max-width: 30%; height: auto;"></div>
+
+        </section>
+
+        <section id="methodology">
+            <h2 class="section-title">Methodology</h2>
+            <div class="row">
+                <div class="col-md-12">
+                    <h3 style="font-size: 14px;">Pipeline Overview</h3>
+                    <p>
+                        <!-- For the need of processing HDR images, we follow a complete image processing process pipeline based on HDR imaging and tonemapping. The following figure shows an overview of the image processing pipeline, which includes merging, white balance, and tonemapping. Merging combines LDR with different exposures into one HDR image. Then, the HDR image is converted by Tonemapping to an image within the range that can be processed and displayed by a standard display device, while preserving as much detail as possible in the HDR image and mapping that detail to the standard dynamic range with appropriate adjustments. For the JPG image stack, linearization must be performed before merging. For the RAW image stack, use image processing tools such as dcraw to convert the images to .TIFF format for easier subsequent processing. Additionally, the color temperature in the image is corrected through white balance to ensure that white appears neutral under all lighting conditions, if necessary. Other techniques, such as contrast and brightness adjustment, as well as saturation adjustment, can also be applied as needed to achieve optimal image presentation. -->
+                        To process HDR images, we use a pipeline of merging, white balance, and tonemapping. Merging
+                        combines LDR exposures into an HDR image, which tonemapping converts to SDR for display while
+                        preserving detail. JPG stacks require linearization, and RAW stacks are converted to .TIFF using
+                        tools like dcraw. White balance corrects color temperature, with optional adjustments for
+                        contrast, brightness, and saturation to optimize presentation.
+                    </p>
+                    <img src="asset/summary-pipeline.jpg" style="max-width: 50%; height: auto;" alt="HDR Pipeline"
+                        class="img-fluid rounded mt-2">
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <h3 style="font-size: 14px;">Noise-optimal Weight</h3>
+                    <p>
+                        Noise-optimal weight utilizes a noise calibration procedure to enhance the fidelity of the HDR
+                        composite. The figure below illustrates the steps involved in capturing and processing ramp
+                        images, including dark frame subtraction and merging. This procedure ensures accurate adjustment
+                        for sensor noise, leveraging techniques such as dark frame averaging, ramp capture, and the use
+                        of calibrated weights. The final merged stack benefits from reduced artifacts and improved
+                        detail preservation.
+                    </p>
+                    <img src="asset/noise-optimal_weight.jpg" style="max-width: 50%; height: auto;"
+                        alt="Noise-optimal Weight" class="img-fluid rounded mt-2">
+                </div>
+            </div>
+        </section>
+
+        <section id="experiments">
+            <h2 class="section-title">Experiments</h2>
+            <div style="text-align: center;">
+                <img src="asset/dataset.png" alt="Kitchen Stack (captured by Ellen)" class="img-fluid rounded mt-3"
+                    style="max-width: 98%; height: auto;">
+            </div>
+            <ul>
+                <li>Nikon D3200 camera: Static kitchen scene on a tripod captured by Ellen</li>
+                <li><strong>Camera Settings:</strong></li>
+                <ul>
+                    <li>Aperture: f/5.6</li>
+                    <li>ISO: 400</li>
+                    <li>Exposure Times: 1/3200, 1/2000, 1/1000, 1/640, 1/320, 1/160, 1/60, 1/30, 1/15, 1/8, 1/5, 1/2
+                        seconds</li>
+                </ul>
+                <li>Conditions: Sunny weather, strong illumination</li>
+                <li>Image Formats: RAW (NEF) and JPG</li>
+                <li># of Images: 12 images per stack</li>
+                <li>Resolution: Width: 6016; Height: 4000</li>
+                <li>Ground Truth: Generated using Photomatix software</li>
+            </ul>
+        </section>
+
+
+        <section id="results">
+            <h2 class="section-title">Results & Discussion</h2>
+            <div style="text-align: center;">
+                <img src="asset/main_results/formula.jpg" alt="Formula" class="img-fluid rounded mt-3"
+                    style="max-width: 25%; height: auto;">
+            </div>
+            <p>
+                The main results of this study showcase the effectiveness of the proposed HDR pipeline in generating
+                high-quality images using both JPG and RAW stacks. The visualization below highlights the outcomes with
+                different weighting schemes and merging types.
+            </p>
+            <div style="text-align: center;">
+                <img src="asset/main_results/4-main-jpg.png"
+                    alt="Visualization of HDR images from JPG stack using different weighting schemes and merging types"
+                    class="img-fluid rounded mt-3" style="max-width: 80%; height: auto;">
+                <p>Visualization of HDR images from JPG stack using different weighting schemes and merging types.</p>
+            </div>
+            <div style="text-align: center;">
+                <img src="asset/main_results/4-main-raw.png"
+                    alt="Visualization of HDR images from RAW stack using different weighting schemes and merging types"
+                    class="img-fluid rounded mt-3" style="max-width: 80%; height: auto;">
+                <p>Visualization of HDR images from RAW stack using different weighting schemes and merging types.</p>
+            </div>
+
+            <h10 class="mt-4" style="font-family: 'Courier New', Courier, monospace; text-decoration: underline;">
+                Tonemapping Results</h10>
+            <div class="row">
+                <div class="col-md-6">
+                    <img src="asset/main_results/4-main-jpg-rgb_tonemap.png"
+                        alt="RGB tonemapping for JPG stack with different K and B values" class="img-fluid rounded mt-3"
+                        style="max-width: 90%; height: auto;">
+                    <p>RGB tonemapping for JPG stack with different K and B values.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="asset/main_results/4-main-jpg-illu_tone.png"
+                        alt="Illuminance tonemapping for JPG stack with different K and B values"
+                        class="img-fluid rounded mt-3" style="max-width: 90%; height: auto;">
+                    <p>Illuminance tonemapping for JPG stack with different K and B values.</p>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <img src="asset/main_results/4-main-raw-rgb_tonemap.png"
+                        alt="RGB tonemapping for RAW stack with different K and B values" class="img-fluid rounded mt-3"
+                        style="max-width: 90%; height: auto;">
+                    <p>RGB tonemapping for RAW stack with different K and B values.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="asset/main_results/4-main-raw-illu_tone.png"
+                        alt="Illuminance tonemapping for RAW stack with different K and B values"
+                        class="img-fluid rounded mt-3" style="max-width: 90%; height: auto;">
+                    <p>Illuminance tonemapping for RAW stack with different K and B values.</p>
+                </div>
+            </div>
+            <h10 class="mt-4" style="font-family: 'Courier New', Courier, monospace; text-decoration: underline;">
+                Comparison on HDR Imaging Methods</h10>
+            <div style="text-align: center;">
+                <img src="asset/comparison/4-com-hdr_all_methods.png"
+                    alt="Comparison of different HDR imaging methods on RAW image stack" class="img-fluid rounded mt-3"
+                    style="max-width: 80%; height: auto;">
+                <p>Comparison of different HDR imaging methods on RAW image stack: Traditional methods include Debevec,
+                    Robertson, and Mertens, while deep learning methods include DeepHDR and SCTNet. Note: For a more
+                    proper analysis, a fine image stack was used with the Robertson method.</p>
+            </div>
+            <div style="text-align: center;">
+                <img src="asset/comparison/4-com-selected_results.png" alt="Selected visualization for HDR results"
+                    class="img-fluid rounded mt-3" style="max-width: 80%; height: auto;">
+                <p>Selected visualization for HDR results: (a) Debevec’s method with RGB tonemapping (K=0.1, B=0.8), (b)
+                    Debevec’s method with photographic tonemapping (key=0.08, L_white=100.0), (c) SCTNet after
+                    gray-world white balancing, (d) Mertens’s method, (e) Mertens’s method after gamma encoding, (f)
+                    Mertens’s method after gray-world white balancing.</p>
+            </div>
+        </section>
+
+        <section id="references" style="font-size: 12px;">
+            <h2 class="section-title">References</h2>
+            <em><em>[1] M. Azimi et al. Pu21: A novel perceptually uniform encod- ing for adapting existing quality
+                    metrics for hdr. In 2021 Picture Coding Symposium (PCS), pages 1–5. IEEE, 2021. 7</em></em>
+            <p><em>[2] K. Barnard, L. Martin, A. Coath, and B. Funt. A comparison of computational color constancy
+                    algorithms. ii. experiments with image data. IEEE transactions on Image Processing, 11(9):985–996,
+                    2002. 4</em></p>
+            <p><em>[3] P. E. Debevec and J. Malik. Recovering high dynamic range radiance maps from photographs. In
+                    Proceedings of the 24th Annual Conference on Computer Graphics and Inter- active Techniques,
+                    SIGGRAPH ’97, pages 369–378, New York, NY, USA, 1997. ACM Press/Addison-Wesley Publish- ing Co. 1,
+                    2, 7, 8, 9, 11, 12</em></p>
+            <p><em>[4] F. Drago, K. Myszkowski, T. Annen, and N. Chiba. Adap- tive logarithmic mapping for displaying
+                    high contrast scenes. EUROGRAPHICS 2003 / P. Brunet and D. Fellner (Guest Editors), 22(3), 2003.
+                    5</em></p>
+            <p><em>[5] R. Fattal, D. Lischinski, and M. Werman. Gradient domain high dynamic range compression. ACM
+                    Transactions on Graphics (TOG), 21(3):249–256, 2002. 2</em></p>
+            <p><em>[6] A. Gijsenij, T. Gevers, and J. van de Weijer. Computational color constancy: Survey and
+                    experiments. IEEE Transac- tions on Image Processing, 20(9):2475–2489, 2011. 2</em></p>
+            <p><em>[7] J. Hable. Uncharted 2: Hdr lighting. In Game Developers Conference, page 56, 2010. 5</em></p>
+            <p><em>[8] S. W. Hasinoff, F. Durand, and W. T. Freeman. Noise- optimal capture for high dynamic range
+                    photography. In 2010 IEEE Computer Society Conference on Computer Vi- sion and Pattern Recognition,
+                    pages 553–560. IEEE, 2010. 3, 6, 7</em></p>
+            <p><em>[9] S. D. Hordley. Scene illuminant estimation: Past, present, and future. Color Research &
+                    Application, 31(4):303–314, 2006. 2</em></p>
+            <p><em>[10] K.-J. Hu, T.-T. Chang, M.-Y. Lu, W.-J. Li, and J.-F. Huang. Bilateral filtering and adaptive
+                    tone-mapping for qualified edge and image enhancement. In Color Imaging XIV: Dis- playing,
+                    Processing, Hardcopy, and Applications, volume 7241, page 724112. SPIE, 2009. 5</em></p>
+            <p><em>[11] N. K. Kalantari, R. Ramamoorthi, et al. Deep high dynamic range imaging of dynamic scenes. ACM
+                    Trans. Graph., 36(4):144–1, 2017. 1, 6, 7</em></p>
+            <p><em>[12] K. Kirk and H. J. Andersen. Noise characterization of weighting schemes for combination of
+                    multiple exposures. In BMVC, volume 3, pages 1129–1138, 2006. 3, 4</em></p>
+            <p><em>[13] G. Krawczyk, K. Myszkowski, and H.-P. Seidel. Percep- tual effects in real-time tone mapping. In
+                    Proceedings of the ACM Symposium on Applied Perception in Graphics and Visualization, pages 195–202,
+                    New York, NY, USA, 2005. Association for Computing Machinery. 5</em></p>
+            <p><em>[14] E. Y. Lam. Combining gray world and retinex theory for au- tomatic white balance in digital
+                    photography. In Proceedings of the Ninth International Symposium on Consumer Elec- tronics,
+                    2005.(ISCE 2005)., pages 134–139. IEEE, 2005. 4</em></p>
+            <p><em>[15] G. W. Larson, H. Rushmeier, and C. Piatko. A visibility matching tone reproduction operator for
+                    high dynamic range scenes. IEEE Transactions on Visualization and Computer Graphics, 3(4):291–306,
+                    1997. 5</em></p>
+            <p><em>[16] T. Mertens, J. Kautz, and F. Van Reeth. Exposure fusion: A simple and practical alternative to
+                    high dynamic range pho- tography. Computer Graphics Forum, 26(1):394–401, 2007. 2</em></p>
+            <p><em>[17] T. Mertens, J. Kautz, and F. Van Reeth. Exposure fusion: A simple and practical alternative to
+                    high dynamic range pho- tography. In Computer graphics forum, volume 28, pages 161–171. Wiley Online
+                    Library, 2009. 1, 6, 7, 11, 12</em></p>
+            <p><em>[18] E. Reinhard, M. Stark, P. Shirley, and J. Ferwerda. Photo- graphic tone reproduction for digital
+                    images. In Proceed- ings of the 29th Annual Conference on Computer Graph- ics and Interactive
+                    Techniques, SIGGRAPH ’02, pages 267– 276, New York, NY, USA, 2002. ACM. 2, 4, 10</em></p>
+            <p><em>[19] E. Reinhard, G. Ward, S. Pattanaik, and P. Debevec. High Dynamic Range Imaging: Acquisition,
+                    Display, and Image- Based Lighting. Morgan Kaufmann, 2010. 2</em></p>
+            <p><em>[20] M. A. Robertson, S. Borman, and R. L. Stevenson. Dy- namic range improvement through multiple
+                    exposures. In Proceedings 1999 international conference on image pro- cessing (Cat. 99CH36348),
+                    volume 3, pages 159–163. IEEE, 1999. 1, 6, 7, 11</em></p>
+            <p><em>[21] S. Tel, Z. Wu, Y. Zhang, B. Heyrman, C. Demonceaux, R. Timofte, and D. Ginhac. Alignment-free
+                    hdr deghost- ing with semantics consistent transformer. arXiv preprint arXiv:2305.18135, 2023. 1, 6,
+                    7, 12</em></p>
+        </section>
+
+
+    </main>
+
+    <footer class="text-center py-2">
+        <p style="font-size: 12px;">&copy; HDR Imaging Pipeline by Ellen (Yi Ge).</p>
+    </footer>
 </body>
+
 </html>
